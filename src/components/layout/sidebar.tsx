@@ -14,7 +14,7 @@ import {
 
 export default function SideBar() {
   return (
-    <div className="w-fit">
+    <div className="w-fit h-screen border-r border-gray-200 mr-8">
       <Sidebar aria-label="Sidebar menu">
         <Sidebar.Items>
           <Sidebar.ItemGroup>

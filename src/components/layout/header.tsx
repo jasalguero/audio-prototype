@@ -1,10 +1,11 @@
 import { Navbar, Dropdown, Avatar } from "flowbite-react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Header() {
   return (
     <Navbar fluid={true} border={true}>
-      <Navbar.Brand href="https://AnalyticMeasures/">
+      <Navbar.Brand href="/">
         <Image
           src="https://img.logoipsum.com/279.svg"
           width={60}
@@ -20,12 +21,7 @@ export default function Header() {
         <Dropdown
           arrowIcon={false}
           inline={true}
-          label={
-            <Avatar
-              alt="User settings"
-              placeholderInitials="MS"
-            />
-          }
+          label={<Avatar alt="User settings" placeholderInitials="MS" />}
         >
           <Dropdown.Header>
             <span className="block text-sm">Matt Serrano</span>
@@ -42,13 +38,11 @@ export default function Header() {
         <Navbar.Toggle />
       </div>
       <Navbar.Collapse>
-        <Navbar.Link href="/navbars" active={true}>
-          Home
-        </Navbar.Link>
-        <Navbar.Link href="/navbars">About</Navbar.Link>
-        <Navbar.Link href="/navbars">Services</Navbar.Link>
-        <Navbar.Link href="/navbars">Pricing</Navbar.Link>
-        <Navbar.Link href="/navbars">Contact</Navbar.Link>
+        <Link href="/playground">Playground</Link>
+        <Link href="/">About</Link>
+        <Link href="/">Services</Link>
+        <Link href="/">Pricing</Link>
+        <Link href="/">Contact</Link>
       </Navbar.Collapse>
     </Navbar>
   );
