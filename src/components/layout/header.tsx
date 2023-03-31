@@ -1,0 +1,55 @@
+import { Navbar, Dropdown, Avatar } from "flowbite-react";
+import Image from "next/image";
+
+export default function Header() {
+  return (
+    <Navbar fluid={true} border={true}>
+      <Navbar.Brand href="https://AnalyticMeasures/">
+        <Image
+          src="https://img.logoipsum.com/279.svg"
+          width={60}
+          height={20}
+          className="mr-3 h-6 sm:h-9"
+          alt="Analytic Measures logo"
+        />
+        <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
+          Analytic Measures
+        </span>
+      </Navbar.Brand>
+      <div className="flex md:order-2">
+        <Dropdown
+          arrowIcon={false}
+          inline={true}
+          label={
+            <Avatar
+              alt="User settings"
+              placeholderInitials="MS"
+            />
+          }
+        >
+          <Dropdown.Header>
+            <span className="block text-sm">Matt Serrano</span>
+            <span className="block truncate text-sm font-medium">
+              m@analyticmeasures.com
+            </span>
+          </Dropdown.Header>
+          <Dropdown.Item>Dashboard</Dropdown.Item>
+          <Dropdown.Item>Settings</Dropdown.Item>
+          <Dropdown.Item>Earnings</Dropdown.Item>
+          <Dropdown.Divider />
+          <Dropdown.Item>Sign out</Dropdown.Item>
+        </Dropdown>
+        <Navbar.Toggle />
+      </div>
+      <Navbar.Collapse>
+        <Navbar.Link href="/navbars" active={true}>
+          Home
+        </Navbar.Link>
+        <Navbar.Link href="/navbars">About</Navbar.Link>
+        <Navbar.Link href="/navbars">Services</Navbar.Link>
+        <Navbar.Link href="/navbars">Pricing</Navbar.Link>
+        <Navbar.Link href="/navbars">Contact</Navbar.Link>
+      </Navbar.Collapse>
+    </Navbar>
+  );
+}
