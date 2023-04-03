@@ -31,7 +31,6 @@ export default function Header() {
           </Dropdown.Header>
           <Dropdown.Item>Dashboard</Dropdown.Item>
           <Dropdown.Item>Settings</Dropdown.Item>
-          <Dropdown.Item>Earnings</Dropdown.Item>
           <Dropdown.Divider />
           <Dropdown.Item>Sign out</Dropdown.Item>
         </Dropdown>
@@ -39,10 +38,8 @@ export default function Header() {
       </div>
       <Navbar.Collapse>
         <Link href="/playground">Playground</Link>
-        <Link href="/">About</Link>
-        <Link href="/">Services</Link>
-        <Link href="/">Pricing</Link>
-        <Link href="/">Contact</Link>
+        <Link href="/">Roster</Link>
+        <Link href="/">Teachers</Link>
       </Navbar.Collapse>
     </Navbar>
   );

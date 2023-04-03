@@ -3,26 +3,19 @@ import {
   ChartPieIcon,
   InboxIcon,
   UserIcon,
-  ShoppingBagIcon,
   ArrowSmallRightIcon,
-  TableCellsIcon,
+  BookOpenIcon,
 } from "@heroicons/react/24/outline";
-import {
-  AdjustmentsVerticalIcon,
-  LifebuoyIcon,
-} from "@heroicons/react/24/solid";
+import { LifebuoyIcon } from "@heroicons/react/24/solid";
 
 export default function SideBar() {
   return (
-    <div className="w-fit h-screen border-r border-gray-200 mr-8">
+    <div className="mr-8 h-full w-fit border-r border-gray-200">
       <Sidebar aria-label="Sidebar menu">
-        <Sidebar.Items>
+        <Sidebar.Items className="h-full flex flex-col justify-between">
           <Sidebar.ItemGroup>
             <Sidebar.Item href="#" icon={ChartPieIcon}>
               Dashboard
-            </Sidebar.Item>
-            <Sidebar.Item href="#" icon={AdjustmentsVerticalIcon}>
-              Kanban
             </Sidebar.Item>
             <Sidebar.Item href="#" icon={InboxIcon}>
               Inbox
@@ -30,21 +23,12 @@ export default function SideBar() {
             <Sidebar.Item href="#" icon={UserIcon}>
               Users
             </Sidebar.Item>
-            <Sidebar.Item href="#" icon={ShoppingBagIcon}>
-              Products
-            </Sidebar.Item>
+          </Sidebar.ItemGroup>
+          <Sidebar.ItemGroup className="hello">
             <Sidebar.Item href="#" icon={ArrowSmallRightIcon}>
               Sign In
             </Sidebar.Item>
-            <Sidebar.Item href="#" icon={TableCellsIcon}>
-              Sign Up
-            </Sidebar.Item>
-          </Sidebar.ItemGroup>
-          <Sidebar.ItemGroup>
-            <Sidebar.Item href="#" icon={ChartPieIcon}>
-              Upgrade to Pro
-            </Sidebar.Item>
-            <Sidebar.Item href="#" icon={AdjustmentsVerticalIcon}>
+            <Sidebar.Item href="#" icon={BookOpenIcon}>
               Documentation
             </Sidebar.Item>
             <Sidebar.Item href="#" icon={LifebuoyIcon}>
