@@ -1,5 +1,5 @@
 import { Table } from "flowbite-react";
-import { useEffect, useState } from "react";
+import { useMediaRecorder } from "~/hooks/useAdio";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
 
 const DevicesTable = ({
@@ -35,10 +35,10 @@ const DevicesTable = ({
 
 const StatusTable = ({
   isMediaSupported,
-  userMedia,
+  mediaRecorder,
 }: {
   isMediaSupported: boolean;
-  userMedia: MediaStream | null;
+  mediaRecorder: MediaRecorder | undefined;
 }) => {
   return (
     <>
@@ -59,7 +59,7 @@ const StatusTable = ({
           <Table.Row>
             <Table.Cell>Are permissions enabled?</Table.Cell>
             <Table.Cell className="w-10">
-              {userMedia ? (
+              {mediaRecorder ? (
                 <CheckCircleIcon color="green" className="w-10" />
               ) : (
                 <XCircleIcon color="red" className="w-10" />
@@ -73,35 +73,11 @@ const StatusTable = ({
 };
 
 export default function AudioStatus() {
-  const [isMediaSupported, setIsMediaSupported] = useState(false);
-  const [userMedia, setUserMedia] = useState<MediaStream | null>(null);
-  const [mediaDevices, setMediaDevices] = useState<MediaDeviceInfo[]>([]);
-
-  useEffect(() => {
-    const isSupported =
-      typeof window !== "undefined" &&
-      navigator.mediaDevices &&
-      navigator.mediaDevices.getUserMedia !== null;
-
-    setIsMediaSupported(isSupported);
-    if (isSupported) {
-      navigator.mediaDevices
-        .getUserMedia({ audio: true })
-        .then((stream) => setUserMedia(stream))
-        .catch((error) => console.log("error ->", error));
-
-      navigator.mediaDevices
-        .enumerateDevices()
-        .then((items) =>
-          setMediaDevices(items.filter((item) => item.kind === "audioinput"))
-        )
-        .catch((error) => console.log("enumerating error", error));
-    }
-  }, []);
+  const { isMediaSupported, mediaRecorder, mediaDevices } = useMediaRecorder();
 
   return (
     <div className="audio-permissions">
-      <StatusTable isMediaSupported={isMediaSupported} userMedia={userMedia} />
+      <StatusTable isMediaSupported={isMediaSupported} mediaRecorder={mediaRecorder} />
       <DevicesTable mediaDevices={mediaDevices} />
     </div>
   );
