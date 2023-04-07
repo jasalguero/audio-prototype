@@ -1,5 +1,5 @@
 import { Table } from "flowbite-react";
-import { useMediaRecorder } from "~/hooks/useAdio";
+import useMediaRecorder from "~/hooks/useAudio";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
 
 const DevicesTable = ({
@@ -73,11 +73,14 @@ const StatusTable = ({
 };
 
 export default function AudioStatus() {
-  const { isMediaSupported, mediaRecorder, mediaDevices } = useMediaRecorder();
+  const { isMediaSupported, mediaRecorder, mediaDevices } = useMediaRecorder({});
 
   return (
     <div className="audio-permissions">
-      <StatusTable isMediaSupported={isMediaSupported} mediaRecorder={mediaRecorder} />
+      <StatusTable
+        isMediaSupported={isMediaSupported}
+        mediaRecorder={mediaRecorder}
+      />
       <DevicesTable mediaDevices={mediaDevices} />
     </div>
   );
