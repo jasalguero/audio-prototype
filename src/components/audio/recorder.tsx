@@ -5,7 +5,7 @@ import {
   PlayCircleIcon,
 } from "@heroicons/react/24/solid";
 import { useState } from "react";
-import useMediaRecorder from "~/hooks/useAudio";
+import useMediaRecorder from "~/hooks/useAudioRecorder";
 import useElapsedTime from "~/hooks/useElapsedTime";
 
 export default function Recorder() {

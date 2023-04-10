@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import useLogStore from "./logStore";
 
 export type RecorderState =
@@ -19,13 +19,13 @@ export type ReactMediaRecorderHookProps = {
   onStart?: () => void;
 };
 
-export default function useMediaRecorder({
+export default function useAudioRecorder({
   onStop = () => null,
   onStart = () => null,
 }: ReactMediaRecorderHookProps) {
   const { addLog } = useLogStore();
   const [isMediaSupported, setIsMediaSupported] = useState(false);
-  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder>();
+  const mediaRecorder = useRef<MediaRecorder | null>(null);
   const [recorderState, setRecorderState] =
     useState<RecorderState>("not_initialized");
   const [mediaDevices, setMediaDevices] = useState<MediaDeviceInfo[]>([]);
@@ -44,29 +44,50 @@ export default function useMediaRecorder({
     setIsMediaSupported(isSupported);
     //2. if is supported initialize the audio recorder
     if (isSupported) {
-      navigator.mediaDevices
-        .getUserMedia({ audio: true })
-        .then((stream) => {
-          setMediaRecorder(new MediaRecorder(stream));
-          setRecorderState("inactive");
-        })
-        .catch((error) => console.log("error ->", error));
+      const setupMediaRecorder = async () => {
+        await setupMediaStream();
+        await getMediaDevices();
+      };
+      void setupMediaRecorder();
 
-      //3. get the list of devices available
-      navigator.mediaDevices
-        .enumerateDevices()
-        .then((items) =>
-          setMediaDevices(items.filter((item) => item.kind === "audioinput"))
-        )
-        .catch((error) => console.log("enumerating error", error));
+      //4. clean up the recorder on unmount
+      return () => {
+        console.log("cleaning up recorder");
+        if (mediaRecorder.current && recorderState === "recording") {
+          mediaRecorder.current.stop();
+        }
+      };
     }
-    //4. clean up the recorder on unmount
-    return () => {
-      console.log("cleaning up recorder");
-      if (mediaRecorder && recorderState === "recording") {
-        mediaRecorder.stop();
-      }
-    };
+  }, []);
+
+  /**
+   * Initialize the media recorder
+   */
+  const setupMediaStream = useCallback(async () => {
+    try {
+      const audioStream = await window.navigator.mediaDevices.getUserMedia({
+        audio: true,
+      });
+      mediaRecorder.current = new MediaRecorder(audioStream);
+      setRecorderState("inactive");
+    } catch (error: any) {
+      console.log("error while initializing audio stream", error);
+    }
+  }, []);
+
+  /**
+   * Get the list of devices available
+   */
+  const getMediaDevices = useCallback(async () => {
+    try {
+      const mediaDevices =
+        await window.navigator.mediaDevices.enumerateDevices();
+      setMediaDevices(
+        mediaDevices.filter((mediaDevice) => mediaDevice.kind === "audioinput")
+      );
+    } catch (error: any) {
+      console.log("enumerating error", error);
+    }
   }, []);
 
   /**
@@ -99,13 +120,13 @@ export default function useMediaRecorder({
    * Called from the client to start recordering
    */
   const startRecording = () => {
-    if (mediaRecorder && recorderState === "inactive") {
-      mediaRecorder.start(TIMESLICE);
+    if (mediaRecorder.current && recorderState === "inactive") {
+      mediaRecorder.current.start(TIMESLICE);
       setRecorderState("recording");
       addLog(`start recording with times slices of ${TIMESLICE} seconds`);
 
-      mediaRecorder.ondataavailable = onDataIsAvailable;
-      mediaRecorder.onstop = onRecordingStopped;
+      mediaRecorder.current.ondataavailable = onDataIsAvailable;
+      mediaRecorder.current.onstop = onRecordingStopped;
       onStart();
     } else {
       console.error("media recorder is not available or inactive");
@@ -117,10 +138,10 @@ export default function useMediaRecorder({
    */
   const stopRecording = () => {
     if (
-      mediaRecorder &&
+      mediaRecorder.current &&
       (recorderState === "recording" || recorderState === "paused")
     ) {
-      mediaRecorder.stop();
+      mediaRecorder.current.stop();
       setRecorderState("inactive");
       addLog(`stopped recording`);
     }
@@ -130,9 +151,9 @@ export default function useMediaRecorder({
    * Called from the client to resume recording
    */
   const resumeRecording = () => {
-    if (mediaRecorder && recorderState === "paused") {
+    if (mediaRecorder.current && recorderState === "paused") {
       setRecorderState("recording");
-      mediaRecorder.resume();
+      mediaRecorder.current.resume();
       addLog(`resumed recording`);
     }
   };
@@ -141,8 +162,8 @@ export default function useMediaRecorder({
    * Called from the client to pause recording
    */
   const pauseRecording = () => {
-    if (mediaRecorder && recorderState === "recording") {
-      mediaRecorder.pause();
+    if (mediaRecorder.current && recorderState === "recording") {
+      mediaRecorder.current.pause();
       setRecorderState("paused");
       addLog(`paused recording`);
     }
@@ -162,7 +183,7 @@ export default function useMediaRecorder({
 
   return {
     isMediaSupported,
-    mediaRecorder,
+    mediaRecorder: mediaRecorder.current,
     mediaDevices,
     recorderState,
     startRecording,

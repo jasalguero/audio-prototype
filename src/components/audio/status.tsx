@@ -1,5 +1,5 @@
 import { Table } from "flowbite-react";
-import useMediaRecorder from "~/hooks/useAudio";
+import useMediaRecorder from "~/hooks/useAudioRecorder";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
 
 const DevicesTable = ({
@@ -38,7 +38,7 @@ const StatusTable = ({
   mediaRecorder,
 }: {
   isMediaSupported: boolean;
-  mediaRecorder: MediaRecorder | undefined;
+  mediaRecorder: MediaRecorder | null;
 }) => {
   return (
     <>
