@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import useLogStore from "./logStore";
+import useAdioStore from "./useAudioLocalStore";
 
 export type RecorderState =
   | "not_initialized"
@@ -33,6 +34,9 @@ export default function useAudioRecorder({
   const [mediaBlobUrl, setMediaBlobUrl] = useState<string | undefined>(
     undefined
   );
+  const currentRecordingItemId = useRef<string | null>(null);
+
+  const { storeNewAudioItem, updateAudioItem } = useAdioStore();
 
   /**
    * Initialize the media recorder
@@ -97,6 +101,12 @@ export default function useAudioRecorder({
   const onDataIsAvailable = ({ data }: BlobEvent) => {
     addLog(`processing new data slice`);
     mediaChunks.current.push(data);
+    if (currentRecordingItemId.current) {
+      updateAudioItem(currentRecordingItemId.current, data);
+    } else {
+      const result = storeNewAudioItem(data);
+      currentRecordingItemId.current = result.id;
+    }
   };
 
   /**
@@ -104,13 +114,14 @@ export default function useAudioRecorder({
    */
   const onRecordingStopped = () => {
     addLog("recording stopped");
-    if (mediaChunks.current.length > 0) {
+    if (mediaChunks.current.length > 0 && currentRecordingItemId.current) {
       // if there are stored slices of audio create the blob
       const blob = new Blob(mediaChunks.current, AUDIO_FORMAT);
       const blobUrl = URL.createObjectURL(blob);
       mediaChunks.current = [];
       setMediaBlobUrl(blobUrl);
       onStop(blobUrl, blob);
+      updateAudioItem(currentRecordingItemId.current, undefined, "completed");
       addLog("new audio file created");
     }
     setRecorderState("inactive");
