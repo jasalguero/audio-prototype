@@ -5,12 +5,14 @@ export default function ShowLogs() {
   return (
     <>
       <h2 className="my-5 text-3xl">Logs</h2>
-      <div className="logs h-96 bg-slate-100 rounded-md p-5 overflow-auto mr-2">
-        <ul>
-        {logs.map((log, index) => (
-          <li key={index}>{log}</li>
-        ))}
-        </ul>
+      <div className="logs mr-2 h-96 overflow-auto rounded-md bg-black p-5 text-white">
+        <pre>
+          <code>
+            {logs.map((log, index) => (
+              <div key={index}>{log}</div>
+            ))}
+          </code>
+        </pre>
       </div>
     </>
   );

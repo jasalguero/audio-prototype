@@ -34,32 +34,6 @@ export default function useAudioRecorder({
     undefined
   );
 
-  useEffect(() => {
-    //1. check that the media devices is supported in the browser
-    const isSupported =
-      typeof window !== "undefined" &&
-      navigator.mediaDevices &&
-      navigator.mediaDevices.getUserMedia !== null;
-
-    setIsMediaSupported(isSupported);
-    //2. if is supported initialize the audio recorder
-    if (isSupported) {
-      const setupMediaRecorder = async () => {
-        await setupMediaStream();
-        await getMediaDevices();
-      };
-      void setupMediaRecorder();
-
-      //4. clean up the recorder on unmount
-      return () => {
-        console.log("cleaning up recorder");
-        if (mediaRecorder.current && recorderState === "recording") {
-          mediaRecorder.current.stop();
-        }
-      };
-    }
-  }, []);
-
   /**
    * Initialize the media recorder
    */
@@ -89,6 +63,32 @@ export default function useAudioRecorder({
       console.log("enumerating error", error);
     }
   }, []);
+
+  useEffect(() => {
+    //1. check that the media devices is supported in the browser
+    const isSupported =
+      typeof window !== "undefined" &&
+      navigator.mediaDevices &&
+      navigator.mediaDevices.getUserMedia !== null;
+
+    setIsMediaSupported(isSupported);
+    //2. if is supported initialize the audio recorder
+    if (isSupported) {
+      const setupMediaRecorder = async () => {
+        await setupMediaStream();
+        await getMediaDevices();
+      };
+      void setupMediaRecorder();
+
+      //4. clean up the recorder on unmount
+      return () => {
+        console.log("cleaning up recorder");
+        if (mediaRecorder.current && recorderState === "recording") {
+          mediaRecorder.current.stop();
+        }
+      };
+    }
+  }, [setupMediaStream, getMediaDevices]);
 
   /**
    * Triggered when a new slice of audio is available
