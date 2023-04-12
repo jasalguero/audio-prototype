@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import useLogStore from "./logStore";
-import useAdioStore from "./useAudioLocalStore";
+import useAudioLocalStore from "./useAudioLocalStore";
 
 export type RecorderState =
   | "not_initialized"
@@ -10,6 +10,7 @@ export type RecorderState =
 
 // slices to get audio data
 const TIMESLICE = 2000;
+
 // format for the output audio
 const AUDIO_FORMAT = {
   type: "audio/ogg; codecs=opus",
@@ -36,7 +37,7 @@ export default function useAudioRecorder({
   );
   const currentRecordingItemId = useRef<string | null>(null);
 
-  const { storeNewAudioItem, updateAudioItem } = useAdioStore();
+  const { storeNewAudioItem, updateAudioItem } = useAudioLocalStore();
 
   /**
    * Initialize the media recorder

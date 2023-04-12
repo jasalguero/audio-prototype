@@ -4,6 +4,7 @@ import { type NextPage } from "next";
 import AudioRecorder from "~/components/audio/recorder";
 import AudioStatus from "~/components/audio/status";
 import ShowLogs from "~/components/showLogs";
+import Recordings from "~/components/audio/recordings";
 
 const Playground: NextPage = () => {
   useEffect(() => {
@@ -18,6 +19,9 @@ const Playground: NextPage = () => {
         </Tabs.Item>
         <Tabs.Item title="Recorder">
           <AudioRecorder />
+        </Tabs.Item>
+        <Tabs.Item title="Recordings">
+          <Recordings />
         </Tabs.Item>
       </Tabs.Group>
       <ShowLogs />
