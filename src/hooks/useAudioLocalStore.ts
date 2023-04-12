@@ -1,6 +1,8 @@
-import { devtools } from "zustand/middleware";
+import { createJSONStorage, devtools, persist } from "zustand/middleware";
 import { create } from "zustand";
+import type { StateStorage } from "zustand/middleware";
 import useLogStore from "./logStore";
+import { get, set, del } from "idb-keyval";
 
 export type AudioItemState = "recording" | "completed" | "uploaded";
 
@@ -8,7 +10,7 @@ export interface AudioItem {
   id: string;
   data: Blob[];
   state: AudioItemState;
-  created: Date;
+  created: string;
 }
 
 interface LocalAudioStore {
@@ -22,107 +24,73 @@ interface LocalAudioStore {
   removeAudioItem: (id: string) => void;
 }
 
+const storage: StateStorage = {
+  getItem: async (name: string): Promise<string | null> => {
+    console.log(name, "has been retrieved");
+    return (await get(name)) || null;
+  },
+  setItem: async (name: string, value: string): Promise<void> => {
+    console.log(name, "with value", value, "has been saved");
+    await set(name, value);
+  },
+  removeItem: async (name: string): Promise<void> => {
+    console.log(name, "has been deleted");
+    await del(name);
+  },
+};
+
 const useLocalAudioStore = create<LocalAudioStore>()(
   devtools(
-    (set) => ({
-      items: [],
-      
-      storeNewAudioItem: (chunk: Blob) => {
-        const audioItem: AudioItem = {
-          id: window.crypto.randomUUID(),
-          data: [chunk],
-          state: "recording",
-          created: new Date(),
-        };
+    persist(
+      (set) => ({
+        items: [],
 
-        set((state) => ({ items: [...state.items, audioItem] }));
+        storeNewAudioItem: (chunk: Blob) => {
+          const audioItem: AudioItem = {
+            id: window.crypto.randomUUID(),
+            data: [chunk],
+            state: "recording",
+            created: new Date().toJSON(),
+          };
 
-        return audioItem;
-      },
+          set((state) => ({ items: [...state.items, audioItem] }));
 
-      updateAudioItem: (
-        id: string,
-        chunk?: Blob,
-        newState?: AudioItemState
-      ) => {
-        set((state) => ({
-          items: state.items.map((item) => {
-            if (item.id === id) {
-              return {
-                ...item,
-                data: chunk ? [...item.data, chunk] : item.data,
-                state: newState ? newState : item.state,
-              };
-            } else {
-              return item;
-            }
-          }),
-        }));
-        // addLog(`audio item updated: ${id} - ${newState ? newState : "-"}`);
-      },
+          return audioItem;
+        },
 
-      removeAudioItem: (id: string) => {
-        set((state) => ({
-          items: state.items.filter((item) => item.id !== id),
-        }));
-      },
-    }),
-    {
-      name: "audio-storage",
-    }
+        updateAudioItem: (
+          id: string,
+          chunk?: Blob,
+          newState?: AudioItemState
+        ) => {
+          set((state) => ({
+            items: state.items.map((item) => {
+              if (item.id === id) {
+                return {
+                  ...item,
+                  data: chunk ? [...item.data, chunk] : item.data,
+                  state: newState ? newState : item.state,
+                };
+              } else {
+                return item;
+              }
+            }),
+          }));
+          // addLog(`audio item updated: ${id} - ${newState ? newState : "-"}`);
+        },
+
+        removeAudioItem: (id: string) => {
+          set((state) => ({
+            items: state.items.filter((item) => item.id !== id),
+          }));
+        },
+      }),
+      {
+        name: "audio-storage",
+        storage: createJSONStorage(() => storage),
+      }
+    )
   )
 );
 
 export default useLocalAudioStore;
-/*
-export default function useAdioLocalStore() {
-  const { addLog } = useLogStore();
-
-  const storeNewAudioItem = (chunk: Blob) => {
-    const audioItem: AudioItem = {
-      id: window.crypto.randomUUID(),
-      data: [chunk],
-      state: "recording",
-      created: new Date(),
-    };
-
-    store.push(audioItem);
-    addLog(`audio item created: ${audioItem.id}`);
-
-    return audioItem;
-  };
-
-  const updateAudioItem = (
-    id: string,
-    chunk?: Blob,
-    newState?: AudioItemState
-  ) => {
-    store = store.map((item) => {
-      if (item.id === id) {
-        return {
-          ...item,
-          data: chunk ? [...item.data, chunk] : item.data,
-          state: newState ? newState : item.state,
-        };
-      } else {
-        return item;
-      }
-    });
-    addLog(`audio item updated: ${id} - ${newState ? newState : "-"}`);
-  };
-
-  const removeAudioItem = (id: string) => {
-    store = store.filter((item) => item.id !== id);
-  };
-
-  const getAllAudioItems = () => {
-    return store;
-  };
-
-  return {
-    storeNewAudioItem,
-    updateAudioItem,
-    removeAudioItem,
-    getAllAudioItems,
-  };
-}*/

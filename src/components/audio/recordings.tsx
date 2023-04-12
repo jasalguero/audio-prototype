@@ -1,19 +1,25 @@
 import { Table } from "flowbite-react";
+import useStore from "~/hooks/useStore";
 import useAudioLocalStore from "~/hooks/useAudioLocalStore";
 import type { AudioItem } from "~/hooks/useAudioLocalStore";
 import { CloudArrowUpIcon, TrashIcon } from "@heroicons/react/20/solid";
 
 export default function Recordings() {
-  const { items, removeAudioItem } = useAudioLocalStore();
+  const audioStore = useStore(useAudioLocalStore, (state) => state);
+  if (!audioStore) {
+    return <p>Loading...</p>;
+  }
+  const { items, removeAudioItem } = audioStore;
+
+  //   const hasHydrated = useAudioLocalStore((state) => state._hasHydrated);
   const deleteItem = (item: AudioItem) => {
     if (window.confirm("Do you want to delete this recording?")) {
       removeAudioItem(item.id);
     }
   };
 
-  return (
-    <>
-      <h2 className="my-5 text-3xl">Current Recordings</h2>
+  const recordingTable = () => {
+    return (
       <Table striped={true}>
         <Table.Head>
           <Table.HeadCell>Id</Table.HeadCell>
@@ -26,7 +32,7 @@ export default function Recordings() {
           {items.map((item) => (
             <Table.Row key={item.id}>
               <Table.Cell>{item.id}</Table.Cell>
-              <Table.Cell>{item.created.toDateString()}</Table.Cell>
+              <Table.Cell>{new Date(item.created).toLocaleString()}</Table.Cell>
               <Table.Cell>{item.data.length}</Table.Cell>
               <Table.Cell>{item.state}</Table.Cell>
               <Table.Cell>
@@ -45,6 +51,13 @@ export default function Recordings() {
           ))}
         </Table.Body>
       </Table>
+    );
+  };
+
+  return (
+    <>
+      <h2 className="my-5 text-3xl">Current Recordings</h2>
+      {recordingTable()}
     </>
   );
 }
