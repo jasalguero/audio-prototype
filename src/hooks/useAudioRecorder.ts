@@ -155,6 +155,7 @@ export default function useAudioRecorder({
     ) {
       mediaRecorder.current.stop();
       setRecorderState("inactive");
+      currentRecordingItemId.current = null;
       addLog(`stopped recording`);
     }
   };
