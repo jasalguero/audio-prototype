@@ -8,7 +8,7 @@ import Recordings from "~/components/audio/recordings";
 const Playground: NextPage = () => {
   return (
     <>
-      <h1 className="mb-10 text-5xl text-red-700">Audio Playground</h1>
+      <h1 className="mb-10 text-5xl">Audio Playground</h1>
       <Tabs.Group>
         <Tabs.Item title="Status">
           <AudioStatus />

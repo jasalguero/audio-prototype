@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import useLogStore from "./logStore";
 import useAudioLocalStore from "./useAudioLocalStore";
+import { RECORDING_SETTINGS } from "~/utils/consts";
 
 export type RecorderState =
   | "not_initialized"
@@ -8,12 +9,9 @@ export type RecorderState =
   | "inactive"
   | "paused";
 
-// slices to get audio data
-const TIMESLICE = 2000;
-
 // format for the output audio
 const AUDIO_FORMAT = {
-  type: "audio/ogg; codecs=opus",
+  type: RECORDING_SETTINGS.AUDIO_FORMAT,
 };
 
 export type ReactMediaRecorderHookProps = {
@@ -133,9 +131,11 @@ export default function useAudioRecorder({
    */
   const startRecording = () => {
     if (mediaRecorder.current && recorderState === "inactive") {
-      mediaRecorder.current.start(TIMESLICE);
+      mediaRecorder.current.start(RECORDING_SETTINGS.TIME_SLICES);
       setRecorderState("recording");
-      addLog(`start recording with times slices of ${TIMESLICE} seconds`);
+      addLog(
+        `start recording with times slices of ${RECORDING_SETTINGS.TIME_SLICES} seconds`
+      );
 
       mediaRecorder.current.ondataavailable = onDataIsAvailable;
       mediaRecorder.current.onstop = onRecordingStopped;
