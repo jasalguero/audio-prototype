@@ -19,7 +19,7 @@ export type ReactMediaRecorderHookProps = {
   onStart?: () => void;
 };
 
-export default function useAudioRecorder({
+export default function useRecorder({
   onStop = () => null,
   onStart = () => null,
 }: ReactMediaRecorderHookProps) {
@@ -44,6 +44,7 @@ export default function useAudioRecorder({
     try {
       const audioStream = await window.navigator.mediaDevices.getUserMedia({
         audio: true,
+        video: true,
       });
       mediaRecorder.current = new MediaRecorder(audioStream);
       setRecorderState("inactive");
@@ -59,10 +60,8 @@ export default function useAudioRecorder({
     try {
       const mediaDevices =
         await window.navigator.mediaDevices.enumerateDevices();
-      setMediaDevices(
-        mediaDevices.filter((mediaDevice) => mediaDevice.kind === "audioinput")
-      );
-    } catch (error: any) {
+      setMediaDevices(mediaDevices);
+    } catch (error) {
       console.log("enumerating error", error);
     }
   }, []);

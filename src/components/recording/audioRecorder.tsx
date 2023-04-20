@@ -5,10 +5,10 @@ import {
   PlayCircleIcon,
 } from "@heroicons/react/24/solid";
 import { useState } from "react";
-import useMediaRecorder from "~/hooks/useAudioRecorder";
+import useMediaRecorder from "~/hooks/useRecorder";
 import useElapsedTime from "~/hooks/useElapsedTime";
 
-export default function Recorder() {
+export default function AudioRecorder() {
   const [blobURL, setBlobURL] = useState<string>();
   const recordingFinished = (blobUrl: string) => {
     setBlobURL(blobUrl);

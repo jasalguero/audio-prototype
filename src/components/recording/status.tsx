@@ -1,5 +1,5 @@
 import { Table } from "flowbite-react";
-import useMediaRecorder from "~/hooks/useAudioRecorder";
+import useMediaRecorder from "~/hooks/useRecorder";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
 
 const DevicesTable = ({
@@ -16,9 +16,9 @@ const DevicesTable = ({
           <Table.HeadCell>Type</Table.HeadCell>
         </Table.Head>
         <Table.Body>
-          {mediaDevices.map((item) => (
+          {mediaDevices.map((item, index) => (
             <Table.Row
-              key={item.deviceId}
+              key={index}
               className={item.deviceId === "default" ? "font-bold" : ""}
             >
               <Table.Cell>

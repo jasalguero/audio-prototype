@@ -1,9 +1,10 @@
 import { Tabs } from "flowbite-react";
 import { type NextPage } from "next";
-import AudioRecorder from "~/components/audio/recorder";
-import AudioStatus from "~/components/audio/status";
+import AudioRecorder from "~/components/recording/audioRecorder";
+import AudioStatus from "~/components/recording/status";
 import ShowLogs from "~/components/showLogs";
-import Recordings from "~/components/audio/recordings";
+import Recordings from "~/components/recording/recordings";
+import VideoRecorder from "~/components/recording/videoRecorder";
 
 const Playground: NextPage = () => {
   return (
@@ -13,8 +14,11 @@ const Playground: NextPage = () => {
         <Tabs.Item title="Status">
           <AudioStatus />
         </Tabs.Item>
-        <Tabs.Item title="Recorder">
+        <Tabs.Item title="Audio Recorder">
           <AudioRecorder />
+        </Tabs.Item>
+        <Tabs.Item title="Video Recorder">
+          <VideoRecorder />
         </Tabs.Item>
         <Tabs.Item title="Recordings">
           <Recordings />
