@@ -16,7 +16,7 @@ const AUDIO_FORMAT = {
 
 export type ReactMediaRecorderHookProps = {
   onStop?: (blobUrl: string, blob: Blob) => void;
-  onStart?: () => void;
+  onStart?: (recorder: MediaRecorder | null) => void;
 };
 
 export default function useRecorder({
@@ -42,11 +42,11 @@ export default function useRecorder({
    */
   const setupMediaStream = useCallback(async () => {
     try {
-      const audioStream = await window.navigator.mediaDevices.getUserMedia({
+      const stream = await window.navigator.mediaDevices.getUserMedia({
         audio: true,
-        video: true,
+        video: true
       });
-      mediaRecorder.current = new MediaRecorder(audioStream);
+      mediaRecorder.current = new MediaRecorder(stream);
       setRecorderState("inactive");
     } catch (error: any) {
       console.log("error while initializing audio stream", error);
@@ -138,7 +138,7 @@ export default function useRecorder({
 
       mediaRecorder.current.ondataavailable = onDataIsAvailable;
       mediaRecorder.current.onstop = onRecordingStopped;
-      onStart();
+      onStart(mediaRecorder.current);
     } else {
       console.error("media recorder is not available or inactive");
     }

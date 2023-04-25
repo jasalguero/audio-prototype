@@ -1,6 +1,6 @@
 import { Tabs } from "flowbite-react";
 import { type NextPage } from "next";
-import AudioRecorder from "~/components/recording/audioRecorder";
+import AudioRecorder from "~/components/recording/audio-recorder";
 import AudioStatus from "~/components/recording/status";
 import ShowLogs from "~/components/showLogs";
 import Recordings from "~/components/recording/recordings";
