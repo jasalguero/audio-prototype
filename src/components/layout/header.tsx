@@ -38,7 +38,7 @@ export default function Header() {
       </div>
       <Navbar.Collapse>
         <Link href="/playground">Playground</Link>
-        <Link href="/">Roster</Link>
+        <Link href="/rive">Rive</Link>
         <Link href="/">Teachers</Link>
       </Navbar.Collapse>
     </Navbar>
