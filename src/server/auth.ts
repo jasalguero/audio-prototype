@@ -4,6 +4,7 @@ import {
   type NextAuthOptions,
   type DefaultSession,
 } from "next-auth";
+import GithubProvider from "next-auth/providers/github";
 import DiscordProvider from "next-auth/providers/discord";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "~/env.mjs";
@@ -38,19 +39,44 @@ declare module "next-auth" {
 export const authOptions: NextAuthOptions = {
   callbacks: {
     session({ session, user }) {
+      console.log("session callback", session, user);
       if (session.user) {
         session.user.id = user.id;
         // session.user.role = user.role; <-- put other properties on the session here
       }
       return session;
     },
+    signIn({ user, account, profile, email, credentials }) {
+      console.log(
+        "signin callback",
+        user,
+        account,
+        profile,
+        email,
+        credentials
+      );
+      return true;
+    },
+    jwt({ token, account, profile }) {
+      // Persist the OAuth access_token and or the user id to the token right after signin
+      console.log("jwt callback", token, account, profile);
+      // if (account) {
+      //   token.accessToken = account.access_token
+      //   token.id = profile.id
+      // }
+      return token;
+    },
   },
   adapter: PrismaAdapter(prisma),
   providers: [
-    // DiscordProvider({
-    //   clientId: env.DISCORD_CLIENT_ID,
-    //   clientSecret: env.DISCORD_CLIENT_SECRET,
-    // }),
+    GithubProvider({
+      clientId: env.GITHUB_ID,
+      clientSecret: env.GITHUB_SECRET,
+    }),
+    DiscordProvider({
+      clientId: env.DISCORD_CLIENT_ID,
+      clientSecret: env.DISCORD_CLIENT_SECRET,
+    }),
     /**
      * ...add more providers here.
      *

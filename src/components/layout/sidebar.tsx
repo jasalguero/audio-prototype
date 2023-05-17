@@ -14,11 +14,11 @@ export default function SideBar() {
       <Sidebar aria-label="Sidebar menu">
         <Sidebar.Items className="h-full flex flex-col justify-between">
           <Sidebar.ItemGroup>
-            <Sidebar.Item href="#" icon={ChartPieIcon}>
-              Dashboard
+            <Sidebar.Item href="/teacher" icon={ChartPieIcon}>
+              Teacher
             </Sidebar.Item>
-            <Sidebar.Item href="#" icon={InboxIcon}>
-              Inbox
+            <Sidebar.Item href="/teacher/students" icon={InboxIcon}>
+              Logged in Students
             </Sidebar.Item>
             <Sidebar.Item href="#" icon={UserIcon}>
               Users
