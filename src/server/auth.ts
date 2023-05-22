@@ -10,6 +10,11 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 
+enum UserRole {
+  TEACHER,
+  STUDENT
+}
+
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
  * object and keep type safety.
@@ -20,15 +25,22 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
+      role?: UserRole;
       // ...other properties
       // role: UserRole;
     } & DefaultSession["user"];
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User {
+    // ...other properties
+    role: UserRole;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    role?: UserRole;
+  }
 }
 
 /**
@@ -42,10 +54,12 @@ export const authOptions: NextAuthOptions = {
       console.log("session callback", session, user);
       if (session.user) {
         session.user.id = user.id;
+        // session.user.role = user.role;
         // session.user.role = user.role; <-- put other properties on the session here
       }
       return session;
     },
+
     signIn({ user, account, profile, email, credentials }) {
       console.log(
         "signin callback",
@@ -57,9 +71,10 @@ export const authOptions: NextAuthOptions = {
       );
       return true;
     },
-    jwt({ token, account, profile }) {
+
+    jwt({ token, user, account, profile }) {
       // Persist the OAuth access_token and or the user id to the token right after signin
-      console.log("jwt callback", token, account, profile);
+      console.log("jwt callback", user, token, account, profile);
       // if (account) {
       //   token.accessToken = account.access_token
       //   token.id = profile.id
