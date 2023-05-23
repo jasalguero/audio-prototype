@@ -8,8 +8,6 @@ export default function Profile({
   profile?: Peer;
   onProfileCreated: (e: string) => void;
 }) {
-
-    
   const updateProfile = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const target = e.target as typeof e.target & {
@@ -32,5 +30,15 @@ export default function Profile({
     );
   };
 
-  return <>{profile ? <h1 className="text-4xl">Your profile id is <strong>{profile.id}</strong></h1> : profileForm()}</>;
+  return (
+    <>
+      {profile ? (
+        <h1 className="text-4xl">
+          Profile created
+        </h1>
+      ) : (
+        profileForm()
+      )}
+    </>
+  );
 }

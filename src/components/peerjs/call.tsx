@@ -1,12 +1,16 @@
 import { Button, Label, TextInput } from "flowbite-react";
-import type Peer from "peerjs";
+import { type Peer, type DataConnection } from "peerjs";
 
 export default function Call({
   profile,
+  connection,
   onCallPeer,
+  onCloseConnection,
 }: {
   profile?: Peer;
+  connection?: DataConnection;
   onCallPeer: (id: string) => void;
+  onCloseConnection: () => void;
 }) {
   const callPeer = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -30,10 +34,23 @@ export default function Call({
     );
   };
 
+  const activeCall = () => {
+    return (
+      <>
+        <h1 className="text-4l">You are in a call with {connection?.peer}</h1>
+        <Button color="failure" onClick={() => onCloseConnection()}>
+          Hang
+        </Button>
+      </>
+    );
+  };
+
   return (
     <>
       {!profile ? (
         <h1 className="text-4xl">You need a profile to make a call!</h1>
+      ) : connection ? (
+        activeCall()
       ) : (
         callPeerForm()
       )}
