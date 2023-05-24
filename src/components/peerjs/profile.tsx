@@ -34,7 +34,7 @@ export default function Profile({
     <>
       {profile ? (
         <h1 className="text-4xl">
-          Profile created
+          Profile created sucessfully :)
         </h1>
       ) : (
         profileForm()

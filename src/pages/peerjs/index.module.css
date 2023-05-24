@@ -1,9 +1,4 @@
 .connection_status_dot {
-  /* height: 25px;
-  width: 25px;
-  border-radius: 50%;
-  display: inline-block;
-  margin-left: 10px; */
   @apply ml-2 inline-block h-5 w-5 rounded-full bg-red-600;
 }
 

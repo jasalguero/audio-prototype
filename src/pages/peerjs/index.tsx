@@ -2,48 +2,74 @@ import { Tabs } from "flowbite-react";
 import { type NextPage } from "next";
 import { useState } from "react";
 import Profile from "~/components/peerjs/profile";
-import { type Peer, type DataConnection } from "peerjs";
+import { type Peer, type MediaConnection } from "peerjs";
 import Call from "~/components/peerjs/call";
 import styles from "./index.module.css";
+import VideoCall from "~/components/peerjs/videoCall";
 
 const Playground: NextPage = () => {
   const [peerProfile, setPeerProfile] = useState<Peer>();
-  const [activeConnection, setActiveConnection] = useState<DataConnection>();
+  const [activeConnection, setActiveConnection] = useState<MediaConnection>();
+  const [activeStream, setActiveStream] = useState<MediaStream>();
 
   const createPeerProfile = (name: string) => {
     void import("peerjs").then(({ default: Peer }) => {
       const profile = new Peer(name);
       setPeerProfile(profile);
-      profile.on("connection", function (connection) {
-        console.log("connected");
-        setActiveConnection(connection);
+      profile.on("call", function (call) {
+        void (async () => {
+          const stream = await window.navigator.mediaDevices.getUserMedia({
+            audio: true,
+            video: true,
+          });
+          call.answer(stream);
 
-        connection.on("data", (data) => {
-          console.log("incoming data!", data);
-        });
+          console.log("connected");
+          setActiveConnection(call);
 
-        connection.on("error", (error) => {
-          console.log("connection failed", error);
-        });
+          call.on("stream", (remoteStream) => {
+            setActiveStream(remoteStream);
+            console.log("incoming data!", remoteStream);
+          });
 
-        connection.on("close", () => {
-          setActiveConnection(undefined);
-        });
+          call.on("error", (error) => {
+            console.log("connection failed", error);
+          });
+
+          call.on("close", () => {
+            console.log("closing current call");
+            stream.getTracks().forEach(function (track) {
+              track.stop();
+            });
+            setActiveConnection(undefined);
+          });
+        })();
       });
     });
   };
 
-  const callPeer = (targetId: string) => {
-    const connection = peerProfile?.connect(targetId);
-    connection?.on("open", () => {
-      setActiveConnection(connection);
-      connection.on("data", (data) => console.log("Received", data));
-      connection?.send("hi");
+  const callPeer = async (targetId: string) => {
+    const stream = await window.navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: true,
     });
-    connection?.on("error", (error) => {
+    const call = peerProfile?.call(targetId, stream);
+    console.log("connecting call", call);
+
+    setActiveConnection(call);
+    call?.on("stream", (remoteStream) => {
+      setActiveStream(remoteStream);
+      console.log("receiving remote stream", remoteStream);
+    });
+
+    call?.on("error", (error) => {
       console.log("error in the connection", error);
     });
-    connection?.on("close", () => {
+    call?.on("close", () => {
+      console.log("closing current call");
+      stream.getTracks().forEach(function (track) {
+        track.stop();
+      });
       setActiveConnection(undefined);
     });
   };
@@ -52,9 +78,9 @@ const Playground: NextPage = () => {
     if (activeConnection) {
       console.log("closing active connection");
       activeConnection.close();
-      setActiveConnection(undefined)
+      setActiveConnection(undefined);
     }
-  }
+  };
 
   const statusClass = activeConnection
     ? styles.status_busy
@@ -84,10 +110,12 @@ const Playground: NextPage = () => {
             profile={peerProfile}
             connection={activeConnection}
             onCloseConnection={closeConnection}
-            onCallPeer={callPeer}
+            onCallPeer={(targetId) => void callPeer(targetId)}
           />
         </Tabs.Item>
-        <Tabs.Item title="Receive"></Tabs.Item>
+        <Tabs.Item title="Receive">
+          <VideoCall videoStream={activeStream} />
+        </Tabs.Item>
       </Tabs.Group>
     </>
   );

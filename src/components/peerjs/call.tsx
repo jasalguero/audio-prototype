@@ -1,5 +1,5 @@
 import { Button, Label, TextInput } from "flowbite-react";
-import { type Peer, type DataConnection } from "peerjs";
+import type { Peer, MediaConnection } from "peerjs";
 
 export default function Call({
   profile,
@@ -8,7 +8,7 @@ export default function Call({
   onCloseConnection,
 }: {
   profile?: Peer;
-  connection?: DataConnection;
+  connection?: MediaConnection;
   onCallPeer: (id: string) => void;
   onCloseConnection: () => void;
 }) {
@@ -17,7 +17,7 @@ export default function Call({
     const target = e.target as typeof e.target & {
       name: { value: string };
     };
-    onCallPeer(target.name.value);
+    void onCallPeer(target.name.value);
   };
 
   const callPeerForm = () => {
