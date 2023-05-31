@@ -27,6 +27,7 @@
     "idb-keyval": "^6.2.0",
     "next": "^13.2.4",
     "next-auth": "^4.20.1",
+    "peerjs": "^1.4.7",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "superjson": "1.12.2",

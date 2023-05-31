@@ -1,0 +1,11 @@
+.connection_status_dot {
+  @apply ml-2 inline-block h-5 w-5 rounded-full bg-red-600;
+}
+
+.status_available {
+  @apply bg-green-600;
+}
+
+.status_busy {
+  @apply bg-yellow-500;
+}

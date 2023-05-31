@@ -39,6 +39,7 @@ export default function Header() {
       <Navbar.Collapse>
         <Link href="/playground">Playground</Link>
         <Link href="/rive">Rive</Link>
+        <Link href="/peerjs">Peerjs</Link>
         <Link href="/">Teachers</Link>
       </Navbar.Collapse>
     </Navbar>
